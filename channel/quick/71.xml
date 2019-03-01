@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans   xmlns="http://www.springframework.org/schema/beans"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns:context="http://www.springframework.org/schema/context"
+		 xsi:schemaLocation="
+		 	http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		    http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			"
+		 default-lazy-init="true">
+
+	<!-- 上海亿通  银联扫码BC-正式-->
+	<bean id="channel" class="cn.pay.quickpay.channel.quick.ShanghaiYitongBCChannel" >
+	
+		<!-- 通道通用地址  包含支付(do)、支付订单查询(order)、代付订单查询(settlement)、余额查询(balance) -->
+		<property name="channelCommonAddress">
+			<value>http://211.149.214.159/api/payment-gate-web/</value>
+		</property>
+		
+		<!-- 通道代付地址 -->
+		<property name="channelSettleAddress">
+			<value>http://211.149.214.159/pay/api/do</value>
+		</property>
+
+		<!-- 商户号 -->
+		<property name="merNo">
+			<value>8504388758324</value>
+		</property>
+		
+		<!-- RSA私钥路径 -->
+		<property name="privateKeyPath">
+			<value>E:/WorkSpace/MyEclipseWorkSpace/quickpass/cert/yitong/8504388758324_private_key.pem</value><!-- /home/pay/10603/cert --><!-- /home/pay/10603/cert/yitong/8504388758324_private_key.pem -->
+		</property>
+		
+		<!-- RSA公钥路径 -->
+		<property name="publicKeyPath">
+			<value>E:/WorkSpace/MyEclipseWorkSpace/quickpass/cert/yitong/8504388758324_public_key.pem</value><!-- /home/pay/10603/cert --><!-- E:/workspace_java/quickpass/cert -->
+		</property>
+		
+		<!-- 通道本地标识 -->
+		<property name="channelCode">
+			<value>71</value>
+		</property>
+		
+		<!-- 支付异步通知地址 -->
+		<property name="payNotifyAddress">
+			<value>shanghaiYitongBCPayNotify</value>
+		</property>
+		
+		<!-- 代付异步通知地址 -->
+		<property name="settleNotifyAddress">
+			<value>shanghaiYitongBCSettleNotify</value>
+		</property>
+
+		
+	</bean>	
+</beans>

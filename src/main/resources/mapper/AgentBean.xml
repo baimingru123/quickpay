@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IAgentDao">
+
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getById" parameterType="int"  resultType="AgentBean" resultMap="agentResultMap">
+        select * from agent where id = #{id}
+    </select>
+    
+    <!-- 扣鉴权费 -->
+    <update id="updateAgent" parameterType="AgentBean" >
+        update agent set auth_balance=auth_balance-auth_fee where id=#{id}
+    </update>
+    
+    <!-- 扣鉴权费 -->
+    <update id="updateAuthBalance" parameterType="AgentBean" >
+        update agent set auth_balance=auth_balance-#{orderAmount} where id=#{id}
+    </update>
+    
+    <!-- 合同权费 -->
+    <update id="updateContractBalance" parameterType="AgentBean" >
+        update agent set contract_balance=contract_balance-#{orderAmount} where id=#{id}
+    </update>
+    
+    <!-- 代付扣费 -->
+    <update id="updateAgentBalance" parameterType="AgentBean" >
+        update agent set balance=balance-#{orderAmount} where id=#{id}
+    </update>
+    
+    <!-- 代付失败补费用 -->
+    <update id="updateAgentBalanceAdd" parameterType="AgentBean" >
+        update agent set balance=balance+#{orderAmount} where id=#{id}
+    </update>
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="AgentBean" id="agentResultMap">
+        <result property="agentName" column="agent_name"  />
+        <result property="agentNo" column="agent_no"  />
+        <result property="authBalance" column="auth_balance"  />
+        <result property="authFee" column="auth_fee"  />
+        <result property="balance" column="balance"  />
+        <result property="contractBalance" column="contract_balance"  />
+        <result property="contractFee" column="contract_fee"  />
+    </resultMap>
+    
+</mapper>
+
+
+

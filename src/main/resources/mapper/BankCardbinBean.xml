@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IBankCardBinDao">
+
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByCardBin" parameterType="String"  resultType="BankCardBinBean" resultMap="resultMap">
+        select * from bank_cardbin where card_bin = #{0} and card_len = #{1} limit 1
+    </select>
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="BankCardBinBean" id="resultMap">
+        <result property="cardBin" column="card_bin"  />
+        <result property="cardLen" column="card_len"  />
+        <result property="cardType" column="card_type"  />
+        <result property="cardName" column="card_name"  />
+        <result property="bankTitle" column="bank_title"  />
+        <result property="bankNo" column="bank_no"  />
+        <result property="bankName" column="bank_name"  />
+        <result property="pattern" column="pattern"  />
+        <result property="channelId" column="channel_id"  />
+    </resultMap>
+    
+</mapper>
+
+
+

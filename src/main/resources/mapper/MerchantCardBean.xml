@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IMerchantCardDao">
+
+	<!-- 信用卡签约 -->
+	<!--执行增加操作的SQL语句。id和parameterType分别与IUserOperation接口中的addUser方法的名字和参数类型一致。
+    useGeneratedKeys设置为"true"表明要MyBatis获取由数据库自动生成的主键；keyProperty="id"指定把获取到的主键值注入到User的id属性--> 
+    <insert id="insertMerchantCard" parameterType="MerchantCardBean"  useGeneratedKeys="true" keyProperty="bean.id"> 
+        
+        insert into merchant_card (
+	        agent_id,merchant_id,channel_id,bank_code_id,
+	        bank_card_no,cvv2,year,month,phone,
+	        full_name,id_card_no,bind_state,agreement_no,
+	        create_time,out_trade_no,platform_out_trade_no,thrid_mer_id
+	         <if test="bean.thridMerKey != null and bean.thridMerKey!=''">  
+	            	,thrid_mer_key
+	  		</if>  
+	        <if test="bean.fee0 != null and bean.fee0!=''">  
+	            	,fee0
+	  		</if>
+	  		<if test="bean.fee != null and bean.fee!=''">  
+	            	,fee
+	  		</if>
+		  	<if test="bean.repayFee != null and bean.repayFee!=''">  
+		            ,repay_fee
+		  	</if>
+	    ) 
+        values(
+        	#{bean.agentId},#{bean.merchantId},#{bean.channelId},#{bean.bankCodeId},
+        	#{bean.bankCardNo},#{bean.cvv2},#{bean.year},#{bean.month},#{bean.phone},
+        	#{bean.fullName},#{bean.idCardNo},#{bean.bindState},#{bean.agreementNo},
+        	#{bean.createTime},#{bean.outTradeNo},#{bean.platformOutTradeNo},#{bean.thridMerId}
+        	  <if test="bean.thridMerKey != null and bean.thridMerKey!=''">  
+	            	,#{bean.thridMerKey}
+	  		</if> 
+        	<if test="bean.fee0 != null and bean.fee0!=''">  
+	            	,#{bean.fee0}
+	  		</if>
+	  		<if test="bean.fee != null and bean.fee!=''">  
+	            	,#{bean.fee}
+	  		</if>
+		  	<if test="bean.repayFee != null and bean.repayFee!=''">  
+		           ,#{bean.repayFee}
+		  	</if>
+        )  
+    </insert>
+    
+    <!-- 信用卡签约更新协议号 -->
+    <update id="updateMerchantCard" parameterType="MerchantCardBean" >
+	       update merchant_card set agreement_no=#{bean.agreementNo},bind_state=#{bean.bindState} where platform_out_trade_no=#{bean.platformOutTradeNo}
+    </update>
+    
+    <!-- 根据平台绑定订单号更新绑定状态 -->
+    <update id="updateBindState" parameterType="MerchantCardBean" >
+	       update merchant_card 
+	       set bind_state=#{bean.bindState} 
+	       <if test="bean.agreementNo != null and bean.agreementNo!=''">  
+	            ,agreement_no=#{bean.agreementNo}
+	  	   </if>
+	  	   <if test="bean.remark != null and bean.remark!=''">  
+	            ,remark=#{bean.remark}
+	  	   </if>
+	       where platform_out_trade_no=#{bean.platformOutTradeNo}
+    </update>
+    
+    <!-- 更新证件信息 -->
+    <update id="updateAuth" parameterType="MerchantCardBean" >
+	       update merchant_card set idcard_img=#{bean.idcardImg},idcard_reverse_img=#{bean.idcardReverseImg},hand_idcard=#{bean.handIdcard},auth_state=#{bean.authState} where platform_out_trade_no=#{bean.platformOutTradeNo}
+    </update>
+    
+    <!-- 更新信用卡基本信息-->
+    <update id="updateCardInfo" parameterType="MerchantCardBean" >
+	       update merchant_card set phone=#{bean.phone},cvv2=#{bean.cvv2},month=#{bean.month},year=#{bean.year} where id=#{bean.id}
+    </update>
+    
+    <!-- 更新费率信息 -->
+    <update id="updateRate" parameterType="MerchantCardBean" >
+	       update merchant_card set fee0=#{bean.fee0},repay_fee=#{bean.repayFee} where id=#{bean.id}
+    </update>
+    
+    <!-- 信用卡解约 -->
+    <update id="updateMerchantCardDel" parameterType="MerchantCardBean" >
+	       update merchant_card set agreement_no=#{bean.agreementNo},bind_state=#{bean.bindState} where platform_out_trade_no=#{bean.platformOutTradeNo}
+    </update>
+    
+    <!-- 更新平台绑卡交易号 -->
+    <update id="updatePlatformOutTradeNo" parameterType="MerchantCardBean" >
+	       update merchant_card set platform_out_trade_no=#{bean.platformOutTradeNo}
+	       <if test="bean.agreementNo != null and bean.agreementNo!=''">  
+	            ,agreement_no=#{bean.agreementNo}
+	  	   </if>
+	  	   <if test="bean.bindState != null and bean.bindState!=''">  
+	            ,bind_state=#{bean.bindState}
+	  	   </if>
+	  	   <if test="bean.outTradeNo != null and bean.outTradeNo!=''">  
+	            ,out_trade_no=#{bean.outTradeNo}
+	  	   </if>
+	  	   <if test="bean.createTime != null and bean.createTime!=''">  
+	            ,create_time=#{bean.createTime}
+	  	   </if>
+	  	   <if test="bean.thridMerId != null and bean.thridMerId!=''">  
+	            ,thrid_mer_id=#{bean.thridMerId}
+	  	   </if>
+	  	   <if test="bean.thridMerKey != null and bean.thridMerKey!=''">  
+	            ,thrid_mer_key=#{bean.thridMerKey}
+	  	   </if>
+	  	    <if test="bean.bankCodeId != null and bean.bankCodeId!=''">  
+	            ,bank_code_id=#{bean.bankCodeId}
+	  	   </if>
+	        where id=#{bean.id}
+    </update>
+    
+     <!-- 更新平台绑卡交易号和通道返回的绑卡申请流水号 -->
+    <update id="updatePlatformOutTradeNoAndBindCode" parameterType="MerchantCardBean" >
+	       update merchant_card set platform_out_trade_no=#{bean.platformOutTradeNo},agreement_no=#{bean.agreementNo} where id=#{bean.id}
+    </update>
+    
+    
+    <!-- select语句 -->
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByInfo" parameterType="MerchantCardBean"  resultType="MerchantCardBean" resultMap="merchantCardResultMap">
+        select * from merchant_card where merchant_id = #{1} and bank_card_no = #{2} and channel_id =  #{3}  limit 1
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByPlatformOrderNumber" parameterType="String"  resultType="MerchantCardBean" resultMap="merchantCardResultMap">
+        select * from merchant_card where platform_out_trade_no = #{1}
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByPlatformOutTradeNo" parameterType="MerchantCardBean"  resultType="MerchantCardBean" resultMap="merchantCardResultMap">
+        select * from merchant_card where merchant_id = #{1} and platform_out_trade_no = #{2} and channel_id =  #{3}  limit 1
+    </select>
+    
+     <!-- 查询代理商分库   根据商户订单号或者平台订单号查询信息 -->
+    <select id="getByOrderNo" parameterType="MerchantCardBean"  resultMap="merchantCardResultMap">
+        select * from merchant_card where merchant_id = #{bean.merchantId} and out_trade_no=#{bean.outTradeNo}       
+        <if test="bean.platformOutTradeNo != null and bean.platformOutTradeNo !='' ">  
+	            and platform_out_trade_no=#{bean.platformOutTradeNo}
+	  	</if>
+   
+    </select>
+ 
+    
+    
+    
+    <!-- 调用存储过程获取不重复唯一商户号 -->
+    <select id="getMerchantCardNumber"  parameterType="map" resultType="map" statementType="CALLABLE" >
+       
+       <!-- CALL generate_merchant_card_no('10',8,@platformMerchantCardNumber); -->
+        {
+         call generate_merchant_card_no(
+               #{orderNamePre,mode=IN,jdbcType=NUMERIC},
+               #{num,mode=IN,jdbcType=NUMERIC},
+               #{agent_id,mode=IN,jdbcType=NUMERIC},
+               #{agent_no,mode=IN,jdbcType=VARCHAR},
+               #{newOrderNo,mode=OUT,jdbcType=VARCHAR}
+         )
+      }
+    </select>
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="MerchantCardBean" id="merchantCardResultMap">
+        <id property="id" column="id"  />
+        <result property="agentId" column="agent_id"  />
+        <result property="merchantId" column="merchant_id"  />
+        <result property="channelId" column="channel_id"  />
+        <result property="bankCodeId" column="bank_code_id"  />
+        <result property="bankCardNo" column="bank_card_no"  />
+        <result property="cvv2" column="cvv2"  />
+        <result property="year" column="year"  />
+        <result property="month" column="month"  />
+        <result property="phone" column="phone"  />
+        <result property="fullName" column="full_name"  />
+        <result property="idCardNo" column="id_card_no"  />
+        <result property="createTime" column="create_time"  />
+        <result property="bindState" column="bind_state"  />
+        <result property="agreementNo" column="agreement_no"  />
+        <result property="outTradeNo" column="out_trade_no"  />
+        <result property="thridMerId" column="thrid_mer_id"  />
+        <result property="thridMerKey" column="thrid_mer_Key"  />
+        <result property="platformOutTradeNo" column="platform_out_trade_no"  />
+        <result property="idcardImg" column="idcard_img"  />
+        <result property="idcardReverseImg" column="idcard_reverse_img"  />
+        <result property="handIdcard" column="hand_idcard"  />
+        <result property="authState" column="auth_state"  />
+        <result property="repayFee" column="repay_fee"  />
+         
+        
+    </resultMap>
+    
+</mapper>
+
+
+

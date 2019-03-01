@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IMerchantChannelDao">
+
+	<!--执行增加操作的SQL语句。id和parameterType分别与IUserOperation接口中的addUser方法的名字和参数类型一致。
+    useGeneratedKeys设置为"true"表明要MyBatis获取由数据库自动生成的主键；keyProperty="id"指定把获取到的主键值注入到User的id属性--> 
+    
+    
+    <insert id="insertMerchantChannel" parameterType="MerchantChannelBean" 
+        useGeneratedKeys="true" keyProperty="bean.id">
+
+        insert into merchant_channel (
+        merchant_id,channel_id,channel_code,type,
+        fee,fee0,
+        repay_fee,balance_fee,withhold_fee,
+        third_mer_no,third_mer_key,
+        create_time,update_time,
+        open_quick,virtual_channel_id
+        <if test="bean.ext!= null and bean.ext!=''">
+            ,ext
+        </if>
+        <if test="bean.settleBankCardNo!= null and bean.settleBankCardNo!=''">
+            ,settle_bank_card_no
+        </if>
+        )
+        values(
+        #{bean.merchantId},#{bean.channelId},#{bean.channelCode},#{bean.type},
+        #{bean.fee},#{bean.fee0},
+        #{bean.repayFee},#{bean.balanceFee},#{bean.withholdFee},
+        #{bean.thirdMerNo},#{bean.thirdMerKey},
+        #{bean.createTime},#{bean.updateTime},
+        #{bean.openQuick},#{bean.virtualChannelId}
+        <if test="bean.ext!= null and bean.ext!=''">
+            ,#{bean.ext}
+        </if>
+        <if test="bean.settleBankCardNo!= null and bean.settleBankCardNo!=''">
+            ,#{bean.settleBankCardNo}
+        </if>
+        )
+    </insert>
+    
+    <!-- 修改费率 -->
+    <update id="updateMerchantChannel" parameterType="MerchantChannelBean" >
+        update merchant_channel set fee=#{bean.fee},fee0=#{bean.fee0},repay_fee=#{bean.repayFee},withhold_fee=#{bean.withholdFee},balance_fee=#{bean.balanceFee},update_time=#{bean.updateTime} where id=#{bean.id}
+    </update>
+    
+     <!-- 修改入网状态 -->
+    <update id="updateOpenQuickStatus" parameterType="MerchantChannelBean" >
+        update merchant_channel set open_quick=#{bean.openQuick} where id=#{bean.id}
+    </update>
+    
+     <!-- 增加结算卡和绑卡id -->
+    <update id="updateSettleCardAndBindId" parameterType="MerchantChannelBean" >
+        update merchant_channel set settle_bank_card_no=#{bean.settleBankCardNo},ext=#{bean.ext} where id=#{bean.id}
+    </update>
+    
+    <!-- select语句 -->
+    
+    <!-- 根据id查询merchantChannel记录 -->
+    <select id="getById"  parameterType="int" resultMap="merchantChannelResultMap">
+        select * from merchant_channel where id = #{id}
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByType"  resultType="MerchantChannelBean" resultMap="merchantChannelResultMap">
+        select * from merchant_channel where merchant_id = #{merchantId} and type = #{type}
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByMerchantId" parameterType="int"  resultType="MerchantChannelBean" resultMap="merchantChannelResultMap">
+        select * from merchant_channel where merchant_id = #{merchantId}
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByVirtualChannelId" parameterType="int"  resultType="MerchantChannelBean" resultMap="merchantChannelResultMap">
+        select * from merchant_channel where merchant_id = #{merchantId} and virtual_channel_id = #{virtualChannelId} limit 1
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByChannelId" parameterType="MerchantChannelBean"  resultMap="merchantChannelResultMap">
+        select * from merchant_channel where merchant_id = #{merchantId} and type = #{type} and channel_id = #{channelId} limit 1
+    </select>
+    
+    <!-- 根据三方商户号和通道id获取MerchantChannelBean -->
+    <select id="getByChannelIdThirdMerNo" parameterType="MerchantChannelBean"  resultMap="merchantChannelResultMap">
+        select * from merchant_channel where third_mer_no=#{thirdMerNo} and channel_id = #{channelId} limit 1
+    </select>
+    
+    <!-- 根据入网时的订单号获取MerchantChannelBean -->
+     <select id="getByExt" parameterType="String"   resultMap="merchantChannelResultMap">
+        select * from merchant_channel where ext = #{ext}   limit 1
+    </select>
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="MerchantChannelBean" id="merchantChannelResultMap">
+        <id property="id" column="id"  />
+        <result property="merchantId" column="merchant_id"  />
+        <result property="channelId" column="channel_id"  />
+        <result property="channelCode" column="channel_code"  />
+        <result property="createTime" column="create_time"  />
+        <result property="updateTime" column="update_time"  />
+        <result property="thirdMerNo" column="third_mer_no"  />
+        <result property="thirdMerKey" column="third_mer_key"  />
+        <result property="openQuick" column="open_quick"  />
+        <result property="repayFee" column="repay_fee"  />
+        <result property="balanceFee" column="balance_fee"  />
+        <result property="withholdFee" column="withhold_fee"  />
+        <result property="virtualChannelId" column="virtual_channel_id"  />
+        <result property="settleBankCardNo" column="settle_bank_card_no"  />
+        
+    </resultMap>
+    
+</mapper>
+
+
+

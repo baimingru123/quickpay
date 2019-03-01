@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.1.139/sell?characterEncoding=utf-8&useSSL=false
+  jackson:
+    default-property-inclusion: non_null
+  redis:
+    host: 192.168.1.139
+    port: 6379
+
+server:
+  context-path: /sell
+
+#logging:
+#  pattern:
+#    console: "%d - %msg%n"
+#  file: E:\log\wx_order\wx_order.log
+
+
+# 微信相关配置信息
+wechat:
+#  金联正式号
+  mpAppId: wx83a902051973be3e
+  mpAppSecret: 2b9aa1895e5d6ef8fe1c3043298ad593
+  #这里的开放平台的信息是易客的   所以不能用。。。。
+  openAppId: wx1de513cc0fa205df
+  openAppSecret: b42022e562a8872460bcc955e8dec05f
+  mchId: 1505696261
+  mchKey: jnjl0147258369987654321023654182
+  keyPath: E:\WorkSpace\ideaWorkSpace\wx_order\src\main\resources\cert\h5.p12
+  notifyUrl: http://baimingru.nat300.top/sell/pay/notify
+  templateId:
+    orderStatus:
+
+#  个人测试账号
+#  mpAppId: wx270ae8c15f632cbc
+#  mpAppSecret: 8de4271d66a9bab7e602b72b813e56d0
+
+# 项目url相关配置
+projectUrl:
+  wechatMpAuthorize: http://baimingru.nat300.top
+  wechatOpenAuthorize: http://baimingru.nat300.top
+  systemUrl: http://baimingru.nat300.top/sell

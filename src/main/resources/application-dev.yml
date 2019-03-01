@@ -1,0 +1,45 @@
+server:
+  servlet:
+    context-path: /quickpay
+  port: 8080
+
+spring:
+    ########################################################
+    ### dataSource --  主库数据源配置.
+    ########################################################
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: bmr123
+      url: jdbc:mysql://localhost/era_test1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      max-active: 20
+      max-idle: 8
+      min-idle: 8
+      initial-size: 10
+
+########################################################
+### mybatis --  mybatis配置.
+########################################################
+mybatis:
+  type-aliases-package: cn.pay.quickpay.bean
+  mapper-locations: classpath:mapper/*.xml
+
+
+
+#  jackson:
+#    default-property-inclusion: non_null
+#  redis:
+#    host: 192.168.1.139
+#    port: 6379
+
+
+
+
+
+
+
+# 项目url相关配置
+#projectUrl:
+#  wechatMpAuthorize: http://baimingru.nat300.top
+#  wechatOpenAuthorize: http://baimingru.nat300.top
+#  systemUrl: http://baimingru.nat300.top/sell

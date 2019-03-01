@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IBankCertificationDao">
+
+
+	<!--执行增加操作的SQL语句。id和parameterType分别与IUserOperation接口中的addUser方法的名字和参数类型一致。
+    useGeneratedKeys设置为"true"表明要MyBatis获取由数据库自动生成的主键；keyProperty="id"指定把获取到的主键值注入到User的id属性--> 
+    <insert id="insertBankCertification" parameterType="BankCertificationBean" 
+        useGeneratedKeys="true" keyProperty="id"> 
+        
+        insert into bank_certification (
+	        id_card,phone,bank_card_no,bank_card_name,
+	        province,city,
+	        bank_tel,brand,bank_name,card_type,
+	        url,create_time,auth_status,auth_msg
+	    ) 
+        values(
+        	#{idCard},#{phone},#{bankCardNo},#{bankCardName},
+        	#{province},#{city},
+        	#{bankTel},#{brand},#{bankName},#{cardType},
+        	#{url},#{createTime},#{authStatus},#{authMsg}
+          )  
+    </insert>
+
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByBankCardNo" parameterType="String"  resultType="BankCertificationBean" resultMap="bankCertificationBeanResultMap">
+        select * from bank_certification where bank_card_no = #{bankCardNo}
+    </select>
+    
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByFourElements" parameterType="BankCertificationBean"  resultType="BankCertificationBean" resultMap="bankCertificationBeanResultMap">
+        select * from bank_certification where bank_card_no = #{bankCardNo} and phone = #{phone} and id_card = #{idCard} and bank_card_name = #{bankCardName}
+    </select>
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="BankCertificationBean" id="bankCertificationBeanResultMap">
+        <result property="idCard" column="id_card"  />
+        <result property="phone" column="phone"  />
+        <result property="bankCardNo" column="bank_card_no"  />
+        <result property="bankCardName" column="bank_card_name"  />
+        <result property="province" column="province"  />
+        <result property="city" column="city"  />
+        <result property="bankTel" column="bank_tel"  />
+        <result property="brand" column="brand"  />
+        <result property="bankName" column="bank_name"  />
+        <result property="cardType" column="card_type"  />
+        <result property="url" column="url"  />
+        <result property="createTime" column="create_time"  />
+        <result property="authStatus" column="auth_status"  />
+        <result property="authMsg" column="auth_msg"  />
+    </resultMap>
+    
+</mapper>
+
+
+

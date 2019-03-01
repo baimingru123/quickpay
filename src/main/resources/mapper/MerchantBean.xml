@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.IMerchantDao">
+
+	<!--执行增加操作的SQL语句。id和parameterType分别与IUserOperation接口中的addUser方法的名字和参数类型一致。
+    useGeneratedKeys设置为"true"表明要MyBatis获取由数据库自动生成的主键；keyProperty="id"指定把获取到的主键值注入到User的id属性--> 
+    <insert id="insertMerchant" parameterType="MerchantBean" useGeneratedKeys="true" keyProperty="bean.id">
+
+        insert into merchant (
+            mer_name,mer_no,mer_address,agent_id,settle_name,settle_phone,
+            id_card,settle_bank_card_no,settle_bank,settle_bank_no,settle_bank_branch,settle_bank_sub,status,
+            create_time,update_time,settle_sub_province,settle_sub_city,
+            platform_mer_no,platform_mer_key,
+            fee0,d0fee,
+            no_integral_fee0,no_integral_fee,
+            repay_fee0,repay_fee,repay_fee1,
+            delimit_fee0,delimit_fee,withhold_fee,
+            balance_fee,
+            settle_type,
+            bank_card_photo,
+            id_card_photo,
+            id_card_back_photo,
+            person_photo,
+            bank_code,
+            electronic_sign_path,
+            store_bussiness_place_path,
+            store_facade_path,
+            city_code,
+            county_code,
+            province_code,
+            industry_code,
+            id_card_expiry_date_end,
+            id_card_expiry_date_start,
+            establish_date,
+            business_license_val_date,
+            business_license_eff_date,
+            business_license_path,
+            business_license_no,
+            merchant_type
+        )
+        values(
+            #{bean.merName},#{bean.merNo},#{bean.merAddress},#{bean.agentId},#{bean.settleName},#{bean.settlePhone},
+            #{bean.idCard},#{bean.settleBankCardNo},#{bean.settleBank},#{bean.settleBankNo},#{bean.settleBankBranch},#{bean.settleBankSub},'0',
+            #{bean.createTime},#{bean.updateTime},#{bean.settleSubProvince},#{bean.settleSubCity},
+            #{bean.platformMerNo},#{bean.platformMerKey},
+            #{bean.fee0},#{bean.d0fee},
+            #{bean.noIntegralFee0},#{bean.noIntegralFee},
+            #{bean.repayFee0},#{bean.repayFee},#{bean.repayFee1},
+            #{bean.delimitFee0},#{bean.delimitFee},#{bean.withholdFee},
+            #{bean.balanceFee},
+            #{bean.settleType},
+            #{bean.bankCardPhoto},
+            #{bean.idCardPhoto},
+            #{bean.idCardBackPhoto},
+            #{bean.personPhoto},
+            #{bean.bankCode},
+            #{bean.electronicSignPath},
+            #{bean.storeBussinessPlacePath},
+            #{bean.storeFacadePath},
+            #{bean.cityCode},
+            #{bean.countyCode},
+            #{bean.provinceCode},
+            #{bean.industryCode},
+            #{bean.idCardExpiryDateEnd},
+            #{bean.idCardExpiryDateStart},
+            #{bean.establishDate},
+            #{bean.businessLicenseValDate},
+            #{bean.businessLicenseEffDate},
+            #{bean.businessLicensePath},
+            #{bean.businessLicenseNo},
+            #{bean.merchantType}
+        )
+    </insert>
+    
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getMerchantByNo" parameterType="String"  resultType="MerchantBean" resultMap="merchantResultMap">
+        select * from merchant where mer_no = #{merNo}
+    </select>
+    
+
+    <select id="getByPlatformMerNo" parameterType="String"  resultType="MerchantBean" resultMap="merchantResultMap">
+        select * from merchant where platform_mer_no = #{platformMerNo}
+    </select>
+    
+
+    <select id="getById" parameterType="int"  resultType="MerchantBean" resultMap="merchantResultMap">
+        select * from merchant where id = #{id}
+    </select>
+
+    <!-- 调用存储过程获取不重复唯一商户号 -->
+    <select id="getMerchantNumber"  parameterType="map" resultType="map" statementType="CALLABLE" >
+        {
+        <!-- CALL generate_merchant_no('10',8,@newMerchantNo); -->
+        call generate_merchant_no(
+        #{merchantNamePre,mode=IN,jdbcType=NUMERIC},
+        #{num,mode=IN,jdbcType=NUMERIC},
+        #{agent_id,mode=IN,jdbcType=NUMERIC},
+        #{platformMerchantNumber,mode=OUT,jdbcType=VARCHAR}
+        )
+        <!--
+
+         call generate_merchant_no(
+               #{0,mode=IN,jdbcType=NUMERIC},
+               #{1,mode=IN,jdbcType=NUMERIC},
+               #{2,mode=OUT,jdbcType=VARCHAR}
+         )
+         -->
+        }
+    </select>
+    
+    <!-- 修改开通快捷 -->
+    <update id="updateOpenQuick" parameterType="MerchantBean" >
+	       update merchant set open_quick=#{bean.openQuick},update_time=#{bean.updateTime} where id=#{bean.id}
+    </update>
+    
+    <!-- 更新第三方商户号、秘钥 -->
+    <update id="updateMerchant" parameterType="MerchantBean" >
+        update merchant set third_mer_no=#{bean.thirdMerNo},third_mer_key=#{bean.thirdMerKey},update_time=#{bean.updateTime} where id=#{bean.id}
+    </update>
+    
+    <!-- 修改结算卡 -->
+    <update id="updateSettle" parameterType="MerchantBean" >
+	       update merchant set settle_name=#{bean.settleName},settle_phone=#{bean.settlePhone},mer_address=#{bean.merAddress},
+	        id_card=#{bean.idCard}, settle_bank_card_no=#{bean.settleBankCardNo}, settle_bank=#{bean.settleBank}, 
+	        settle_bank_no=#{bean.settleBankNo} ,settle_bank_branch=#{bean.settleBankBranch} ,settle_bank_sub=#{bean.settleBankSub} ,
+	        settle_sub_province=#{bean.settleSubProvince}, settle_sub_city=#{bean.settleSubCity},update_time=#{bean.updateTime}
+	        where id=#{bean.id}
+    </update>
+    
+    <!-- 修改费率 -->
+    <update id="updateFee" parameterType="MerchantBean" >
+	       update merchant set 
+	       fee0 = #{bean.fee0}, 
+	       d0fee = #{bean.d0fee},
+	       no_integral_fee0 = #{bean.noIntegralFee0},
+	       no_integral_fee = #{bean.noIntegralFee},
+	       repay_fee0 = #{bean.repayFee0},
+	       repay_fee = #{bean.repayFee},
+	       repay_fee1 = #{bean.repayFee1},
+	       delimit_fee0 = #{bean.delimitFee0},
+	       delimit_fee = #{bean.delimitFee},
+	       withhold_fee = #{bean.withholdFee},
+	       balance_fee = #{bean.balanceFee},
+	       update_time = #{bean.updateTime}
+	       where id = #{bean.id}
+    </update>
+    
+    <delete id="deleteMerchant" parameterType="MerchantBean">
+        delete from merchant where id=#{bean.id}
+    </delete>
+    
+
+    
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="MerchantBean" id="merchantResultMap">
+        <id property="id" column="id"  />
+        <result property="merName" column="mer_name"  />
+        <result property="agentId" column="agent_id"  />
+        <result property="merNo" column="mer_no"  />
+        <result property="merAddress" column="mer_address"  />
+        <result property="settleName" column="settle_name"  />
+        <result property="settlePhone" column="settle_phone"  />
+        <result property="idCard" column="id_card"  />
+        <result property="settleBankCardNo" column="settle_bank_card_no"  />
+        <result property="settleBank" column="settle_bank"  />
+        <result property="settleBankNo" column="settle_bank_no"  />
+        <result property="settleBankBranch" column="settle_bank_branch"  />
+        <result property="settleBankSub" column="settle_bank_sub"  />
+        <result property="createTime" column="create_time"  />
+        <result property="updateTime" column="update_time"  />
+        <result property="settleSubProvince" column="settle_sub_province"  />
+        <result property="settleSubCity" column="settle_sub_city"  />
+        <result property="platformMerNo" column="platform_mer_no"  />
+        <result property="platformMerKey" column="platform_mer_key"  />
+        <result property="openQuick" column="open_quick"  />
+        <result property="bankCardPhoto" column="bank_card_photo"  />
+        <result property="idCardPhoto" column="id_card_photo"  />
+        <result property="idCardBackPhoto" column="id_card_back_photo"  />
+        <result property="personPhoto" column="person_photo"  />         
+        
+        <result property="fee0" column="fee0"  />
+        <result property="d0fee" column="d0fee"  />
+        
+        <result property="noIntegralFee0" column="no_integral_fee0"  />
+        <result property="noIntegralFee" column="no_integral_fee"  />
+        
+        <result property="delimitFee0" column="delimit_fee0"  />
+        <result property="delimitFee" column="delimit_fee"  />
+        <result property="withholdFee" column="withhold_fee"  />
+        
+        <result property="repayFee0" column="repay_fee0"  />
+        <result property="repayFee" column="repay_fee"  />
+        <result property="repayFee1" column="repay_fee1"  />
+        
+        <result property="balanceFee" column="balance_fee"  />
+        
+        <result property="settleType" column="settle_type"  />
+        
+        
+    </resultMap>
+    
+</mapper>
+
+
+

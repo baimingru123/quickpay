@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans default-init-method="init_dependence" default-lazy-init="true">
+	<!-- 商银通BC -->
+	<bean id="channel" class="cn.pay.quickpay.channel.quick.ShangyintongChannel">
+		<!-- 接口请求地址 -->
+		<property name="channelAddress">
+			<value>http://trade.shangyintongtj.com/middlepaytrx</value>
+		</property>
+		
+		<!-- 渠道号 -->
+		<property name="agentNo">
+			<value>8934438650</value>
+		</property>
+		<!-- 加密密钥 -->
+		<property name="agentKey">
+			<value>0glu144m2qC18SkNo58na6nb</value>
+		</property>
+		<!-- 签名密钥 -->
+		<property name="agentSignKey">
+			<value>X36yfzus8jho950ZpDs059GV3G82A731</value>
+		</property>
+		<!-- 商户号 -->
+		<property name="merchantNo">
+			<value>M100003133</value>
+		</property>
+		<!-- 加密密钥 -->
+		<property name="merchantKey">
+			<value>mClDvhb7EMFcIheW6u4fEokv</value>
+		</property>
+		<!-- 签名密钥 -->
+		<property name="merchantSignKey">
+			<value>vGxuDmie76lFzJp9WFJGDwD14dx5tJS0</value>
+		</property>
+		<!-- 通道代码 -->
+		<property name="channelCode">
+			<value>69</value>
+		</property>
+		<!-- 异步通知地址 -->
+		<property name="notifyAddress">
+			<value>shangyintongNotify</value>
+		</property>
+	</bean>	
+</beans>

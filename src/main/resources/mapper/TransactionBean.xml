@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.pay.quickpay.dao.ITransactionDao">
+
+	<!--执行增加操作的SQL语句。id和parameterType分别与IUserOperation接口中的addUser方法的名字和参数类型一致。
+    useGeneratedKeys设置为"true"表明要MyBatis获取由数据库自动生成的主键；keyProperty="id"指定把获取到的主键值注入到User的id属性--> 
+    <insert id="insertTransaction" parameterType="TransactionBean" 
+        useGeneratedKeys="true" keyProperty="bean.id"> 
+        
+        insert into transaction (
+	        merchant_id,merchant_number,merchant_username,agent_id,agent_no,create_time,
+	        payer_name,id_card_type,id_card_no,bank_card_no,bank_card_name,year,month,
+	        cvv2,phone,currency,settlement_bank_card_no,
+	        settlement_bank_card_name,settlement_type,channel_id,channel_code,order_amount,arrival_amount,
+	        channel_collection_charges,channel_service_charge,channel_transaction_rate,
+	        agency_collection1,agency_service1,agency_transaction_rate1,
+	        agency_collection2,agency_service2,agency_transaction_rate2,
+	        agency_collection3,agency_service3,agency_transaction_rate3,
+	        agent_collection,agent_service,agent_transaction_rate,
+	        merchant_collection,merchant_service,merchant_transaction_rate,
+	        order_ip,period,period_unit,order_number,platform_order_number,
+	        platform_transaction_number,third_order_number,third_transaction_number,third_msg,
+	        goods_name,goods_desc,terminal_type,terminal_id,status,
+	        return_url,notify_url,is_integral,type,
+	        repay_ids,settle_type
+	        <if test="bean.payType != null and bean.payType!=''">  
+	            ,pay_type
+	  		</if>
+	  		<if test="bean.isContractSign != null and bean.isContractSign!=''">  
+	            ,is_contract_sign
+	  		</if>
+	  		<if test="bean.thirdStatus != null and bean.thirdStatus!=''">  
+	            ,third_status
+	  		</if>
+	    ) 
+        values(
+        	#{bean.merchantId},#{bean.merchantNumber},#{bean.merchantUsername},#{bean.agentId},#{bean.agentNo},#{bean.createTime},
+        	#{bean.payerName},#{bean.idCardType},#{bean.idCardNo},#{bean.bankCardNo},#{bean.bankCardName},#{bean.year},#{bean.month},
+        	#{bean.cvv2},#{bean.phone},#{bean.currency},#{bean.settlementBankCardNo},
+        	#{bean.settlementBankCardName},#{bean.settlementType},#{bean.channelId},#{bean.channelCode},#{bean.orderAmount},#{bean.arrivalAmount},
+        	#{bean.channelCollectionCharges},#{bean.channelServiceCharge},#{bean.channelTransactionRate},
+        	#{bean.agencyCollection1},#{bean.agencyService1},#{bean.agencyTransactionRate1},
+        	#{bean.agencyCollection2},#{bean.agencyService2},#{bean.agencyTransactionRate2},
+        	#{bean.agencyCollection3},#{bean.agencyService3},#{bean.agencyTransactionRate3},
+        	#{bean.agentCollection},#{bean.agentService},#{bean.agentTransactionRate},
+        	#{bean.merchantCollection},#{bean.merchantService},#{bean.merchantTransactionRate},
+        	#{bean.orderIp},#{bean.period},#{bean.periodUnit},#{bean.orderNumber},#{bean.platformOrderNumber},
+        	#{bean.platformTransactionNumber},#{bean.thirdOrderNumber},#{bean.thirdTransactionNumber},#{bean.thirdMsg},
+        	#{bean.goodsName},#{bean.goodsDesc},#{bean.terminalType},#{bean.terminalId},#{bean.status},
+        	#{bean.returnUrl},#{bean.notifyUrl},#{bean.isIntegral},#{bean.type},
+        	#{bean.repayIds},#{bean.settleType}
+        	<if test="bean.payType != null and bean.payType!=''">  
+	           ,#{bean.payType}
+	  		</if>
+	  		<if test="bean.isContractSign != null and bean.isContractSign !=''">  
+	             ,#{bean.isContractSign}
+	  		</if>
+	  		<if test="bean.thirdStatus != null and bean.thirdStatus !=''">  
+	             , #{bean.thirdStatus}
+	  		</if>
+        )  
+    </insert>
+    
+    <!-- 调用存储过程获取不重复唯一订单号 -->
+    <select id="getOrderNumber"  parameterType="map" resultType="map" statementType="CALLABLE" >
+       
+       <!-- CALL generate_order_no('10',14,@newOrderNo); -->
+        {
+         call generate_order_no(
+               #{orderNamePre,mode=IN,jdbcType=NUMERIC},
+               #{num,mode=IN,jdbcType=NUMERIC},
+               #{agent_id,mode=IN,jdbcType=NUMERIC},
+               #{agent_no,mode=IN,jdbcType=VARCHAR},
+               #{platformOrderNumber,mode=OUT,jdbcType=VARCHAR}
+         )
+      }
+    </select>
+    
+    
+    <!-- select语句 -->
+    
+    <!-- 根据id查询该条交易记录 -->
+     <select id="getById" parameterType="int"  resultType="TransactionBean" resultMap="transactionResultMap">
+        select * from transaction where id = #{id}
+    </select>
+    
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByPlatformOrderNumber" parameterType="String"  resultType="TransactionBean" resultMap="transactionResultMap">
+        select * from transaction where platform_order_number = #{platformOrderNumber}
+    </select>
+    
+      <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByOrderNumber" parameterType="String"  resultType="TransactionBean" resultMap="transactionResultMap">
+        select * from transaction where order_number = #{orderNumber} limit 1
+    </select>
+    
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByOrder" parameterType="TransactionBean"  resultType="TransactionBean" resultMap="transactionResultMap">
+        select * from transaction where 
+        <if test="bean.platformOrderNumber != null and bean.platformOrderNumber!=''">  
+             platform_order_number = #{bean.platformOrderNumber} and 
+        </if>
+        order_number = #{bean.orderNumber} and 
+        agent_id = #{bean.agentId} and 
+        merchant_id = #{bean.merchantId}
+    </select>
+    
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByPlatformOrderNumberList" parameterType="TransactionBean"  resultType="TransactionBean" resultMap="transactionResultMap">
+        ${paramSQL} 
+    </select>
+    
+    <!-- select语句 -->
+    <!-- 返回list的select语句，注意 resultMap的值是指向前面定义好的 -->
+    <select id="getByRepayIds" parameterType="String"  resultType="TransactionBean" resultMap="transactionResultMap">
+        select * from transaction where repay_ids = #{repayIds}
+    </select>
+    
+    <!-- 保存第三方订单号 -->
+    <update id="updateTransaction" parameterType="TransactionBean" >
+        update transaction set third_order_number=#{bean.thirdOrderNumber} where id=#{bean.id}
+    </update>
+    
+    <!-- 异步回调处理 -->
+    <update id="updateTransactionCallback" parameterType="TransactionBean" >
+        update transaction set 
+        third_order_number = #{bean.thirdOrderNumber},
+        third_msg = #{bean.thirdMsg},
+        settle_state = #{bean.settleState},
+        status = #{bean.status},
+        third_status = #{bean.thirdStatus},
+        <if test="bean.payTime != null and bean.payTime!=''">  
+	            pay_time =  #{bean.payTime},
+	  	</if>
+	  	<if test="bean.thirdTransactionNumber != null and bean.thirdTransactionNumber!=''">  
+	            third_transaction_number =  #{bean.thirdTransactionNumber},
+	  	</if>
+        third_settle_status = #{bean.thirdSettleStatus} 
+        where platform_order_number = #{bean.platformOrderNumber}
+    </update>
+    
+    <!-- 异步回调处理 -->
+    <update id="updateTransactionStatus" parameterType="TransactionBean" >
+        update transaction set 
+        status = #{bean.status}
+        <if test="bean.thirdMsg != null and bean.thirdMsg!=''">  
+	            ,third_msg =  #{bean.thirdMsg}
+	  	</if>
+	  	<if test="bean.thirdOrderNumber != null and bean.thirdOrderNumber!=''">  
+	            ,third_order_number =  #{bean.thirdOrderNumber}
+	  	</if>
+	  	<if test="bean.thirdStatus != null and bean.thirdStatus!=''">  
+	            ,third_status =  #{bean.thirdStatus}
+	  	</if>
+        where platform_order_number = #{bean.platformOrderNumber}
+    </update>
+    
+    <!-- 异步回调处理、修改订单合同状态 -->
+    <update id="updateContractSignStatus" parameterType="TransactionBean" >
+        update transaction set 
+        contract_sign_status = #{bean.contractSignStatus}
+        where platform_order_number = #{bean.platformOrderNumber}
+    </update>
+    
+    <!-- call generate_order_no('10',14,@orderNo) -->
+    <!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+    <resultMap type="TransactionBean" id="transactionResultMap">
+        <id property="id" column="id"  />
+        <result property="merchantId" column="merchant_id"  />
+        <result property="merchantNumber" column="merchant_number"  />
+        <result property="merchantUsername" column="merchant_username"  />
+        <result property="createTime" column="create_time"  />
+        <result property="payTime" column="pay_time"  />
+        <result property="payerName" column="payer_name"  />
+        <result property="idCardType" column="id_card_type"  />
+        <result property="idCardNo" column="id_card_no"  />
+        <result property="bankCardNo" column="bank_card_no"  />
+        <result property="bankCardName" column="bank_card_name"  />
+        <result property="year" column="year"  />
+        <result property="month" column="month"  />
+        <result property="cvv2" column="cvv2"  />
+        <result property="phone" column="phone"  />
+        <result property="currency" column="currency"  />
+        <result property="settlementBankCardNo" column="settlement_bank_card_no"  />
+        <result property="settlementBankCardName" column="settlement_bank_card_name"  />
+        <result property="settlementType" column="settlement_type"  />
+        <result property="channelId" column="channel_id"  />
+        <result property="channelCode" column="channel_code"  />
+        <result property="orderAmount" column="order_amount"  />
+        <result property="arrivalAmount" column="arrival_amount"  />
+        <result property="channelCollectionCharges" column="channel_collection_charges"  />
+        <result property="channelServiceCharge" column="channel_service_charge"  />
+        <result property="channelTransactionRate" column="channel_transaction_rate"  />
+        <result property="agencyCollection1" column="agency_collection1"  />
+        <result property="agencyService1" column="agency_service1"  />
+        <result property="agencyTransactionRate1" column="agency_transaction_rate1"  />
+        <result property="agencyCollection2" column="agency_collection2"  />
+        <result property="agencyService2" column="agency_service2"  />
+        <result property="agencyTransactionRate2" column="agency_transaction_rate2"  />
+        <result property="agencyCollection3" column="agency_collection3"  />
+        <result property="agencyService3" column="agency_service3"  />
+        <result property="agencyTransactionRate3" column="agency_transaction_rate3"  />
+        <result property="agentCollection" column="agent_collection"  />
+        <result property="agentService" column="agent_service"  />
+        <result property="agentTransactionRate" column="agent_transaction_rate"  />
+        <result property="merchantCollection" column="merchant_collection"  />
+        <result property="merchantService" column="merchant_service"  />
+        <result property="merchantTransactionRate" column="merchant_transaction_rate"  />
+        <result property="orderIp" column="order_ip"  />
+        <result property="period" column="period"  />
+        <result property="periodUnit" column="period_unit"  />
+        <result property="orderNumber" column="order_number"  />
+        <result property="platformOrderNumber" column="platform_order_number"  />
+        <result property="transactionNumber" column="transaction_number"  />
+        <result property="thirdOrderNumber" column="third_order_number"  />
+        <result property="thirdSettleStatus" column="third_settle_status"  />
+        <result property="thirdStatus" column="third_status"  />
+        <result property="thirdTransactionNumber" column="third_transaction_number"  />
+        <result property="thirdMsg" column="third_msg"  />
+        <result property="goodsName" column="goods_name"  />
+        <result property="goodsDesc" column="goods_desc"  />
+        <result property="terminalType" column="terminal_type"  />
+        <result property="terminalId" column="terminal_id"  />
+        <result property="status" column="status"  />
+        <result property="returnUrl" column="return_url"  />
+        <result property="notifyUrl" column="notify_url"  />
+        <result property="settleState" column="settle_state"  />
+        <result property="agentId" column="agent_id"  />
+        <result property="agentNo" column="agent_no"  />
+        <result property="isIntegral" column="is_integral"  />
+        <result property="repayIds" column="repay_ids"  />
+        <result property="settleType" column="settle_type"  />
+        <result property="isContractSign" column="is_contract_sign"  />
+        <result property="contractSignStatus" column="contract_sign_status"  />
+    </resultMap>
+    
+</mapper>
+
+
+

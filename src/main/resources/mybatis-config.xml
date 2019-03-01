@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 主库 -->
+	<!--加载连接数据库的基本信息文件-->
+    <properties resource="jdbc.properties"></properties>
+    
+    <!--<settings>
+        打印查询语句 
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>-->
+    
+	<!-- mybatis别名定义 -->
+    <typeAliases> 
+        <package name="cn.pay.quickpay.bean"/>
+    </typeAliases> 
+    
+    <!-- 配置数据源相关属性和事务  -->  
+    <environments default="development">
+    	<!-- 环境配置开始，可以配置多个环境 而使用哪一个可以在创建session时指定，默认使用default中的值 -->  
+        <environment id="development">
+        <!--事务配置，使用jdbc类型的事务  -->  
+        <transactionManager type="JDBC"/>
+        	<!--数据源的配置，使用库链接池类型 --> 
+            <dataSource type="POOLED">
+            <property name="driver" value="${driver}"/>
+            <property name="url" value="${url}&amp;autoReconnect=true" /><!-- MySQL 参数autoReconnect=true 解决8小时连接失效 -->
+            <property name="username" value="${username}"/>
+            <property name="password" value="${password}"/>
+            <!-- 最大的活动连接数，活动连接，顾名思义，就是正在与数据库交互的连接 -->
+            <property name="poolMaximumActiveConnections" value="20"/>  
+			<property name="poolMaximumCheckoutTime" value="20000"/> 
+			<!-- 空闲连接数，就是没有处理请求的连接 --> 
+			<!-- 
+			我一向对源码抱有恐惧的心理，感觉那都是大神写的，我等屌丝怎能看得懂，不过被逼无奈，翻出Mybatis的源码看了一看，结果豁然开朗。
+			找到org.apache.ibatis.datasource.pooled包下面的PooledDataSource类，这个就是连接池的实现类。
+			可以看到里面定义了几个参数，其中就包括poolMaximumActiveConnections和poolMaximumIdleConnections，
+			找到pushConnection方法，这个方法里会判断当前空闲连接数和poolMaximumIdleConnections的大小，如果小于他，会new PooledConnection并放进队列中，
+			这就导致一个问题，当所有的连接被占满后，Mybatis为了保持一定的空闲连接，会不断获取新的连接，然后这些新连接被占用后，就会再去new PooledConnection，结果就是超过了mysql设置的最大连接数，然后数据库返回该错误。
+			不知道这算不算是Mybatis的一个"坑"吧，总之在使用时要小心了，并发量大的时候就会爆掉你的数据库，解决办法很简单，将poolMaximumIdleConnections设置为0即可，果然改掉后压力测试不会爆掉数据库。 
+			 -->
+			<property name="poolMaximumIdleConnections" value="0"/>  
+			<property name="driver.encode" value="utf-8"/>  
+            </dataSource>
+        </environment>
+    </environments>
+    
+    <!-- mybatis的mapper文件，每个xml配置文件对应一个接口 -->
+    <!--  映射路径 -->  
+    <mappers>
+    	<!--<mapper resource="mapper/AreaBean.xml"/>-->
+    	<!--<mapper resource="mapper/ChannelBean.xml"/>-->
+    	<!--<mapper resource="mapper/AuthInfoBean.xml"/>-->
+    	<mapper resource="mapper/AgentBean.xml"/>
+    	<mapper resource="mapper/BankCertificationBean.xml"/>
+    	<!--<mapper resource="mapper/BankCardBinBean.xml"/>-->
+    	<!--<mapper resource="mapper/BankCodeBean.xml"/>-->
+    	<mapper resource="mapper/MerchantBean.xml"/>
+    	<mapper resource="mapper/MerchantChannelBean.xml"/>
+    	<mapper resource="mapper/MerchantCardBean.xml"/>
+    	<mapper resource="mapper/TransactionBean.xml"/>
+    	<!--<mapper resource="com/pay/platform/mapper/GenerateOrderNoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/GenerateMerchantCardNoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/GenerateMerchantNoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/GenerateContractCertNoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/GenerateContractNoBean.xml"/>-->
+		<!--<mapper resource="com/pay/platform/mapper/GenerateUniqueOrderNoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/TanzhiJinjianInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/XingjieJinjianInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/XingjieAuthInfoBean.xml"/> 	-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthBankFourElementsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthIdCardNameElementsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthProductBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMobilePhoneOperatorBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthAntiFraudBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthPayBlacklistBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMultiHeadedLendBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthRepaymentQueryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthRepaymentQueryDetailBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMultiHeadedRosterBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMultiHeadListDetailBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthRiskRosterBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthRiskListDetailBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMobilePhoneOperatorQueryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMobilePhoneOperatorQueryMonBillRecordsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMobilePhoneOperatorQueryMonCallDetailBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMobilePhoneOperatorQueryMonMonthCallDetailBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdQueryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdQueryConsumeMonthDetailsListBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdQueryConsumeReceiveDetailsListBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdQueryConsumeTypeDetailsListBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/ContractCertificateBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/ContractBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/ContractSignBean.xml"/>   -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthRiskDecisionBean.xml"/>	-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthQueryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthPetitionerBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdBaitiaoBillInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdBaseInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdCommonlyUsedAddressBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdConsumptionCategoryInfosBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdFinanceDataBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdJintiaoBillInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdPetitionerConsumptionInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdStatisticsSummaryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthJdTotalConsumptionInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbBaseInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbCommonlyUsedAddressBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbConsumptionCategoryInfosBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbFinanceDataBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbFootmarkCalendarsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbFootmarkStatisticsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbHuabeiConsumptionInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbPetitionerConsumptionInfoBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbRechargeConsumptionInfosBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbShoppingCartStatisticsBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbStatisticsSummaryBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTbTotalConsumptionInfoBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoBaseInfoBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoCommonlyConnectAreasBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoCommonlyConnectMobileBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoCommonlyUsedServicesBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoConnectMobileExtBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoContactsCommonlyConnectAreasBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoCrossValidationBaseBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoCuishouInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoEmergencyContactsBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoGoOutDatasBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoMonthCostInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoMonthUsedInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoPeriodUsedInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoStatisticsSummaryBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthMnoTagConnectInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthChsiBaseInfoBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthChsiEducationDataBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthChsiEducationInSchoolDataBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthChsiPubMedDataBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundBaseInfoBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundDepositDetailsBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundLoanInfosBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundLoanRepayRecordesBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundPersonInfoBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthHfundWithdrawsBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTransactionDetailsBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/AuthTransactionItemDetailsBean.xml"/> -->
+    	<!--<mapper resource="com/pay/platform/mapper/LoanBean.xml"/>-->
+    	<!--<mapper resource="com/pay/platform/mapper/SmsBean.xml"/> -->
+    </mappers>
+</configuration>

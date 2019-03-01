@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans   xmlns="http://www.springframework.org/schema/beans"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+		 default-lazy-init="true">
+
+
+	<!-- 配置文件信息 -->
+	<bean id="config" class="cn.pay.quickpay.config.CoreConfig" >
+
+		<!-- 机构配置文件路径 -->
+		<property name="agentFilePath">
+			<value>d:/configxml/test/agent2018</value><!-- /configxml --><!-- d:/configxml/era/agent2018--><!-- /configxml/agent2018 -->
+		</property>
+		<!-- 快捷类通道配置文件路径 -->
+		<property name="channelFilePath">
+			<value>d:/configxml/test/channel2018</value><!-- /configxml --><!-- /config -->
+		</property>
+		<!-- 鉴权类通道配置文件路径 -->
+		<property name="authChannelFilePath">
+			<value>d:/configxml/test/auth_channel2018</value><!-- /configxml --><!-- /config -->
+		</property>
+		<!-- 贷款通道配置文件路径 -->
+		<property name="loanChannelFilePath">
+			<value>d:/configxml/test/loan_channel2018</value><!-- /configxml --><!-- /config -->
+		</property>
+		<!-- 电子合同类通道配置文件路径 -->
+		<property name="agreementChannelFilePath">
+			<value>/configxml/agreement_channel2018</value><!-- /configxml --><!-- /config -->
+		</property>
+		<!-- 图片服务器存放路径 -->
+		<property name="imageFilePath">
+			<value>/home/pay/image.shanfushidai.cn/images/</value>
+		</property>
+		<!-- 合同服务器存放路径 -->
+		<property name="contractFilePath">
+			<value>/home/pay/image.shanfushidai.cn/contract/</value>
+		</property>
+		<!-- 文件服务器地址 -->
+		<property name="fileHostUrl">
+			<value>https://image.shanfushidai.cn/</value>
+		</property>
+		<!-- 接受通道异步通知的服务器域名地址 -->
+		<property name="notifyHostUrl">
+			<value>https://api.shanfushidai.cn/</value>
+		</property>
+		<!-- 生成平台唯一订单号时的前缀 -->
+		<property name="orderPrefix">
+			<value>10</value>
+		</property>
+		<!-- 是否生产环境 -->
+		<property name="production">
+			<value>false</value><!-- true --><!-- false -->
+		</property>
+		<!-- 端口 -->
+		<property name="port">
+			<value>10603</value><!-- 10603 -->
+		</property>
+	
+		
+
+	
+	</bean>
+
+
+</beans>
