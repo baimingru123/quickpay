@@ -15,6 +15,7 @@ public class QuickPayException extends RuntimeException {
     public QuickPayException(ResultEnum resultEnum) {
         super(resultEnum.getMessage());
         this.code = resultEnum.getCode();
+
     }
 
     public QuickPayException(String code,String message) {
